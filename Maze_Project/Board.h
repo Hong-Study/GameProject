@@ -4,9 +4,11 @@
 #include <QtWidgets/qgraphicsScene>
 #include <QtWidgets/QgraphicsRectItem>
 #include <QtWidgets/QGraphicsTextItem>
+
+#include <QKeyEvent>
+
 #include <vector>
 #include <qdebug.h>
-
 #include "Items.h"
 #include "Player.h"
 
@@ -23,6 +25,12 @@ private:
 		Wall,
 		USER = 2
 	};
+	enum class Move {
+		UP = 72,
+		DOWN = 80,
+		LEFT = 75,
+		RIGHT = 77
+	};
 
 	TileType** _board;
 	int _size;
@@ -34,8 +42,11 @@ public:
 	void addItem(int row, int colum);
 	void GenerateByBinaryTree();
 	void removeItem(int row, int colum);
-	/*void println(bool m);
+	void moveItem(Item* item, int toRow, int toColum);
 	void moveCharcter(int x0, int y0, int x1, int y1);
-	bool check(int x, int y);*/
-	//virtual void PlayerMoveEvent();
+	bool check(int x, int y);
+
+protected:
+	void keyPressEvent(QKeyEvent* event);
+	void PlayerMoveEvent();
 };

@@ -13,15 +13,4 @@ public:
 	int Y();
 	void set_X(int x);
 	void set_Y(int y);
-
-	enum class Move {
-		UP = 72,
-		DOWN = 80,
-		LEFT = 75,
-		RIGHT = 77
-	};
-	/*class EventListner {
-	public:
-		virtual void PlayerMoveEvent() = 0;
-	};*/
 };

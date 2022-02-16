@@ -86,7 +86,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp" />
-    <QtUic Include="Maze_Project.ui" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Items.cpp" />
     <ClCompile Include="main.cpp" />
