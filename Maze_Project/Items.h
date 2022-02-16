@@ -5,11 +5,10 @@
 #include <QtWidgets/QgraphicsPixmapItem>
 #include <qtimeline.h>
 
-class Item : public QGraphicsPixmapItem, public QObject {
-	class EventListener;
+class Item : public QGraphicsPixmapItem {
 public:
 	Item(const std::string& path, int row, int colum, QGraphicsItem* parent);
-	std::string path() const;
+	std::string path() const;		//위치 반환
 	int row() const;
 	int colum() const;
 
@@ -17,8 +16,7 @@ public:
 	void setColum(int colum);
 
 private:
-	const std::string _path;
+	const std::string _path;		// 사진 위치
 	int _row;
 	int _colum;
-	QPointF _pressPos;
 };

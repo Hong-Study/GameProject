@@ -4,7 +4,7 @@
 #include <QtWidgets/qgraphicsScene>
 #include <QtWidgets/QgraphicsRectItem>
 #include <QtWidgets/QGraphicsTextItem>
-
+#include <qgraphicsview.h>
 #include <QKeyEvent>
 
 #include <vector>
@@ -12,13 +12,12 @@
 #include "Items.h"
 #include "Player.h"
 
-class Board {
+class Board : public QGraphicsView{
 private:
 	QGraphicsScene* _scene;
 	QGraphicsRectItem _root;
 
 	std::vector<std::vector<Item*>> _items;
-	//std::mt19937 _gen;                     //시드 값(device())으로 일련의 숫자 만듬. 단 시드값이 같으면 같은 값이 나옴. 그래서 시드값으로 비교하여 변경여부 확인 가능
 
 	enum class TileType {
 		Empty,
@@ -26,10 +25,10 @@ private:
 		USER = 2
 	};
 	enum class Move {
-		UP = 72,
-		DOWN = 80,
-		LEFT = 75,
-		RIGHT = 77
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT
 	};
 
 	TileType** _board;
@@ -39,14 +38,14 @@ private:
 public:
 	Board(QGraphicsScene* _scene, int size, Player* player);
 	~Board();
-	void addItem(int row, int colum);
-	void GenerateByBinaryTree();
-	void removeItem(int row, int colum);
-	void moveItem(Item* item, int toRow, int toColum);
+	void addItem(int row, int colum);					//아이템 추가
+	void GenerateByBinaryTree();						//미로 알고리즘
+	void removeItem(int row, int colum);				//아이템 삭제
+	void moveItem(Item* item, int toRow, int toColum);	//아이템 교환
 	void moveCharcter(int x0, int y0, int x1, int y1);
-	bool check(int x, int y);
+	void PlayerMoveEvent();
+	bool check(int x, int y);							//벽인지 확인
 
 protected:
-	void keyPressEvent(QKeyEvent* event);
-	void PlayerMoveEvent();
+	virtual void keyPressEvent(QKeyEvent* Key) override;
 };

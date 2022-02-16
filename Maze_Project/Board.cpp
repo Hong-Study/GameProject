@@ -22,7 +22,6 @@ Board::Board(QGraphicsScene* _scene, int size, Player* player)
 	for (int i = 0; i < size; i++) {
 		_board[i] = new TileType[size];
 	}
-
 	GenerateByBinaryTree();
 
 	for (int row = 0; row < Consts::BOARD_LENGTH; ++row) {
@@ -33,7 +32,6 @@ Board::Board(QGraphicsScene* _scene, int size, Player* player)
 		}
 	}
 }
-
 
 void Board::GenerateByBinaryTree()
 {
@@ -151,10 +149,11 @@ bool Board::check(int x, int y) {
 		return false;
 }
 
-void Board::keyPressEvent(QKeyEvent* event)
+void Board::keyPressEvent(QKeyEvent* Key)
 {
 	qDebug() << "정상 작동중";
-	/*switch () {
+	
+	switch (Key->key()) {
 	case Qt::Key_Up:
 		qDebug() << "Up";
 		break;
@@ -167,7 +166,7 @@ void Board::keyPressEvent(QKeyEvent* event)
 	case Qt::Key_Right:
 		qDebug() << "Right";
 		break;
-	}*/
+	}
 }
 
 void Board::PlayerMoveEvent()

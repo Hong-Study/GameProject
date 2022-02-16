@@ -11,18 +11,18 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
-    /*QString str = "Hello";
-    a.setApplicationDisplayName(str);*/
+    QString str = "Hello";
+    a.setApplicationDisplayName(str);
 
+    
     QGraphicsScene scene;
+    QGraphicsView view;
     Player* player = new Player(1, 1, "HongJiHyun");
     Board board(&scene, 31, player);
-    QGraphicsView view(&scene);
-    
+    view.setScene(&scene);
     view.setMaximumHeight(1000);
     view.setMaximumWidth(1000);
     view.showMaximized();
-
     return a.exec();
 }
 
