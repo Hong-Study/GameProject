@@ -8,8 +8,6 @@ namespace Consts {
         "C:\\imges\\Empty.png",
         "C:\\imges\\User.png"
     };
-
-    const int BOARD_LENGTH = 11;
     const int BOARD_IMAGE_SIZE = 30;
 
     //const int ANIMATION_TIME = 200;

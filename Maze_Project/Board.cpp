@@ -4,26 +4,25 @@
 #include <qdebug.h>
 #include <QKeyEvent>
 Board::Board(int size, Player* player)
-	: _size(11)					//후에 사이즈 추가
+	: _size(size)					//후에 사이즈 추가
 	, _player(player)
-	, _board(new TileType*[11])
+	, _board(new TileType*[size])
 {
 	QGraphicsScene::addItem(&_root);
-	_root.setX(QGraphicsScene::sceneRect().width() / 2 - (Consts::BOARD_IMAGE_SIZE * Consts::BOARD_LENGTH / 2));		//X좌표 설정
-	_root.setY(QGraphicsScene::sceneRect().height() / 2 - (Consts::BOARD_IMAGE_SIZE * Consts::BOARD_LENGTH / 2));		//Y좌표 설정
+	_root.setX(QGraphicsScene::sceneRect().width() / 2 - (Consts::BOARD_IMAGE_SIZE * _size / 2));		//X좌표 설정
+	_root.setY(QGraphicsScene::sceneRect().height() / 2 - (Consts::BOARD_IMAGE_SIZE * _size / 2));		//Y좌표 설정
 
-	if (size % 2 == 0)
+	if (_size % 2 == 0)
 		return;
-
+	
 	for (int i = 0; i < _size; i++) {			
 		_board[i] = new TileType[_size];
 	}
 	GenerateByBinaryTree();
-
-	for (int row = 0; row < Consts::BOARD_LENGTH; ++row) {
-		std::vector<Item*> rowItems(Consts::BOARD_LENGTH);
+	for (int row = 0; row < _size; ++row) {
+		std::vector<Item*> rowItems(_size);
 		_items.push_back(rowItems);
-		for (int colum = 0; colum < Consts::BOARD_LENGTH; ++colum) {
+		for (int colum = 0; colum < _size; ++colum) {
 			addItem(row, colum);
 		}
 	}

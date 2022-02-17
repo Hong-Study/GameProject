@@ -2,6 +2,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/qgraphicsScene>
 #include <QtWidgets/QgraphicsView>                  // ±×·¡ÇÈ ºä
+#include <qpushbutton.h>
 #include <qwidget.h>
 
 #include "Menu.h"
@@ -16,14 +17,8 @@ int main(int argc, char *argv[])
     QString str = "Maze-Game";
     a.setApplicationDisplayName(str);
 
-    Player* player = new Player(1, 1,"HOng");
     QGraphicsView view;
-    view.setMinimumHeight(600);
-    view.setMinimumWidth(600);
-
-    Menu menu(&size, player);
-    view.setScene(&menu);
-    view.show();
+    Menu menu(&view);
     return a.exec();
 }
 
