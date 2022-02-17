@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Items.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="Consts.h" />
     <ClInclude Include="Items.h" />
     <ClInclude Include="MainGame.h" />
+    <QtMoc Include="Menu.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

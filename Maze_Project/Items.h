@@ -3,7 +3,6 @@
 
 #include <string>
 #include <QtWidgets/QgraphicsPixmapItem>
-#include <qtimeline.h>
 
 class Item : public QGraphicsPixmapItem {
 public:

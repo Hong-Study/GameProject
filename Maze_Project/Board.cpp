@@ -1,26 +1,22 @@
 #include "Board.h"
 #include "Consts.h"
-#include "Player.h"
-#include "Items.h"
 #include <random>
 #include <qdebug.h>
-
-
-Board::Board(QGraphicsScene* _scene, int size, Player* player)
-	: _scene(_scene)
-	, _size(size)
+#include <QKeyEvent>
+Board::Board(int size, Player* player)
+	: _size(11)					//후에 사이즈 추가
 	, _player(player)
-	, _board(new TileType*[size])
+	, _board(new TileType*[11])
 {
-	_scene->addItem(&_root);
-	_root.setX(_scene->sceneRect().width() / 2 - (Consts::BOARD_IMAGE_SIZE * Consts::BOARD_LENGTH / 2));		//X좌표 설정
-	_root.setY(_scene->sceneRect().height() / 2 - (Consts::BOARD_IMAGE_SIZE * Consts::BOARD_LENGTH / 2));		//Y좌표 설정
+	QGraphicsScene::addItem(&_root);
+	_root.setX(QGraphicsScene::sceneRect().width() / 2 - (Consts::BOARD_IMAGE_SIZE * Consts::BOARD_LENGTH / 2));		//X좌표 설정
+	_root.setY(QGraphicsScene::sceneRect().height() / 2 - (Consts::BOARD_IMAGE_SIZE * Consts::BOARD_LENGTH / 2));		//Y좌표 설정
 
 	if (size % 2 == 0)
 		return;
 
-	for (int i = 0; i < size; i++) {
-		_board[i] = new TileType[size];
+	for (int i = 0; i < _size; i++) {			
+		_board[i] = new TileType[_size];
 	}
 	GenerateByBinaryTree();
 
@@ -90,15 +86,17 @@ void Board::removeItem(int row, int colum)
 
 	_items[row][colum] = nullptr;
 	item->setParentItem(nullptr);
-	_scene->removeItem(item);
+	QGraphicsScene::removeItem(item);
 
 	delete item;
 }
+
 void Board::addItem(int row, int colum)
 {
 	const std::string& path_wall = Consts::paths[0].c_str();
 	const std::string& path_empty = Consts::paths[1].c_str();
 	const std::string& path_user = Consts::paths[2].c_str();
+
 	Item* item;
 	if(_board[row][colum] == TileType::Wall)
 		item = new Item(path_wall, row, colum, &_root);
@@ -108,22 +106,20 @@ void Board::addItem(int row, int colum)
 		item = new Item(path_empty, row, colum, &_root);
 
 	item->setPos(colum * Consts::BOARD_IMAGE_SIZE, row * Consts::BOARD_IMAGE_SIZE);
-	_scene->addItem(item);					//이름이 같지만 Scene의 addItem 함수임.
+	QGraphicsScene::addItem(item);					//이름이 같지만 Scene의 addItem 함수임.
 	_items[row][colum] = item;
 }
 
-void Board::moveCharcter(int x0, int y0, int x1, int y1)
+void Board::moveCharcter(int y0, int x0, int y1, int x1)
 {
-	Item* item0 = _items[x0][y0];
-	Item* item1 = _items[x1][y1];
+	Item* item0 = _items[y0][x0];
+	Item* item1 = _items[y1][x1];
 
-	moveItem(item0, x1, y1);
-	moveItem(item1, x0, y0);
+	moveItem(item0, y1, x1);
+	moveItem(item1, y0, x0);
 
-	_items[x0][y0] = item1;
-	_items[x1][y1] = item0;
-
-	
+	_items[y0][x0] = item1;
+	_items[y1][x1] = item0;
 
 	TileType tmp = _board[y0][x0];
 	_board[y0][x0] = _board[y1][x1];
@@ -142,64 +138,33 @@ void Board::moveItem(Item* item, int toRow, int toColum)
 	_items[toRow][toColum] = item;
 }
 
-bool Board::check(int x, int y) {
+bool Board::check(int y, int x) {
 	if (TileType::Empty == _board[y][x])
 		return true;
 	else
 		return false;
 }
 
-void Board::keyPressEvent(QKeyEvent* Key)
-{
-	qDebug() << "정상 작동중";
-	
-	switch (Key->key()) {
+void Board::keyPressEvent(QKeyEvent* event) {
+	qDebug() << "Good Working";
+	auto x = _player->X();
+	auto y = _player->Y();
+	switch (event->key()) {
 	case Qt::Key_Up:
-		qDebug() << "Up";
+		if (check(y - 1, x))
+			moveCharcter(y, x, y - 1, x);
 		break;
 	case Qt::Key_Down:
-		qDebug() << "Down";
+		if (check(y + 1, x))
+			moveCharcter(y, x, y + 1, x);
 		break;
 	case Qt::Key_Left:
-		qDebug() << "Left";
+		if (check(y, x - 1))
+			moveCharcter(y, x, y, x-1);
 		break;
 	case Qt::Key_Right:
-		qDebug() << "Right";
+		if (check(y, x + 1))
+			moveCharcter(y, x, y, x+1);
 		break;
-	}
-}
-
-void Board::PlayerMoveEvent()
-{
-	char c;
-	int x;
-	int y;
-	for (;;) {
-		if (_kbhit()) {        //키보드 입력 확인 (true / false)
-			c = _getch();      // 방향키 입력시 224 00이 들어오게 되기에 앞에 있는 값 224를 없앰
-			if (c == -32) {    // -32로 입력되면
-				c = _getch();  // 새로 입력값을 판별하여 상하좌우 출력
-				x = _player->X();
-				y = _player->Y();
-				switch (c) {
-				case static_cast<int>(Move::LEFT):
-					if (check(x - 1, y))
-						moveCharcter(x, y, x - 1, y);
-					break;
-				case static_cast<int>(Move::RIGHT):
-					if (check(x + 1, y))
-						moveCharcter(x, y, x + 1, y);
-					break;
-				case static_cast<int>(Move::DOWN):
-					if (check(x, y + 1))
-						moveCharcter(x, y, x, y + 1);
-					break;
-				case static_cast<int>(Move::UP):
-					if (check(x, y - 1))
-						moveCharcter(x, y, x, y - 1);
-					break;
-				}
-			}
-		}
 	}
 }

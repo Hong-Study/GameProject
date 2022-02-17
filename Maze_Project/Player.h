@@ -9,8 +9,9 @@ private:
 	std::string _name;
 public:
 	Player(int x, int y, std::string name);
-	int X();
-	int Y();
+	int X() const;
+	int Y() const;
 	void set_X(int x);
 	void set_Y(int y);
+	void set_Name(const std::string name);
 };

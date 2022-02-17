@@ -7,12 +7,12 @@ Player::Player(int x, int y, std::string name)
 {
 }
 
-int Player::X()
+int Player::X() const
 {
 	return _x;
 }
 
-int Player::Y()
+int Player::Y() const
 {
 	return _y;
 }
@@ -25,4 +25,8 @@ void Player::set_X(int x)
 void Player::set_Y(int y)
 {
 	_y = y;
+}
+
+void Player::set_Name(const std::string name) {
+	_name = name;
 }
