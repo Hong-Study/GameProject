@@ -6,6 +6,7 @@
 #include <QtWidgets/qpushbutton.h>
 #include <qgraphicsview.h>
 #include <qlineedit.h>
+#include <qlabel.h>
 
 #include "Player.h"
 #include "Board.h"
@@ -24,9 +25,15 @@ public:
 
 private slots:
 	void btn_click();
+	void Menu_Setting(int width, int height);
+	void Windows_Setting(int width, int height);
 
 private:
-	QLineEdit _input1;
-	QLineEdit _input2;
+	QLineEdit _Size_Input;
+	QLabel _Size_Label;
+
+	QLineEdit _Name_Input;
+	QLabel _Name_Label;
+
 	QPushButton _button;
 };
