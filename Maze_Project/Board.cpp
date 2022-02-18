@@ -6,7 +6,7 @@
 Board::Board(int size, Player* player)
 	: _size(size)					//후에 사이즈 추가
 	, _player(player)
-	, _board(new TileType*[size])
+	, _board(new Node*[size])
 {
 	QGraphicsScene::addItem(&_root);
 	//_root.setX(QGraphicsScene::sceneRect().width() / 2 - (Consts::BOARD_IMAGE_SIZE * _size / 2));		//X좌표 설정
@@ -16,9 +16,10 @@ Board::Board(int size, Player* player)
 		return;
 	
 	for (int i = 0; i < _size; i++) {			
-		_board[i] = new TileType[_size];
+		_board[i] = new Node[_size];
 	}
 	GenerateByBinaryTree();
+
 	for (int row = 0; row < _size; ++row) {
 		std::vector<Item*> rowItems(_size);
 		_items.push_back(rowItems);
@@ -32,37 +33,65 @@ void Board::GenerateByBinaryTree()
 {
 	//초기맵 설정
 	for (int y = 0; y < _size; y++) {
-		for (int x = 0; x < _size; x++) {
-			if (x % 2 == 0 || y % 2 == 0)
-				_board[y][x] = TileType::Wall;
-			else
-				_board[y][x] = TileType::Empty;
-		}
-	}
-	srand(unsigned(time(NULL)));
 
-	//랜덤 길 뚫기
-	for (int y = 0; y < _size; y++) {
 		for (int x = 0; x < _size; x++) {
-			if (x % 2 == 0 || y % 2 == 0)
-				continue;
-			if (y == _size - 2) {
-				_board[y][x + 1] = TileType::Empty;
-				continue;
-			}
-			if (x == _size - 2) {
-				_board[y + 1][x] = TileType::Empty;
-				continue;
-			}
-			if (rand() % 2 == 0) {
-				_board[y][x + 1] = TileType::Empty;
+			if (x % 2 == 0 || y % 2 == 0) {
+				_board[y][x].type = TileType::Wall;
 			}
 			else {
-				_board[y + 1][x] = TileType::Empty;
+				_board[y][x].type = TileType::Empty;
+				_board[y][x].came = false;
 			}
 		}
 	}
-	_board[_player->Y()][_player->X()] = TileType::USER;
+	RecursiveBackTraing(1, 1);
+	_board[1][1].type = TileType::USER;
+	_board[_size - 2][_size - 1].type = TileType::Empty;
+}
+
+void Board::shuffleArray(int* array, int size) {
+	int i, r, temp;
+
+	// 시드값을 얻기 위한 random_device 생성.
+	std::random_device rd;
+
+	// random_device 를 통해 난수 생성 엔진을 초기화 한다.
+	std::mt19937 gen(rd());
+
+	// 0 부터 99 까지 균등하게 나타나는 난수열을 생성하기 위해 균등 분포 정의.
+	std::uniform_int_distribution<int> dis(0, 4);
+
+	for (i = 0; i < (size - 1); ++i)
+	{
+		r = i + (dis(gen) % (size - i));
+		temp = array[i];
+		array[i] = array[r];
+		array[r] = temp;
+	}
+}
+int Board::inRange(int y, int x)
+{
+	return (y > 0 && y < _size - 1) && (x > 0 && x < _size - 1);
+}
+void Board::RecursiveBackTraing(int y, int x) {
+	int r, nx, ny;
+	_board[y][x].came = true;
+	shuffleArray(directions, 4);
+	for (r = 0; r < 4; r++) {
+		nx = x + DIR[directions[r]][0];
+		ny = y + DIR[directions[r]][1];
+
+		if (inRange(ny, nx) && (_board[ny][nx].type == TileType::Empty) && !_board[ny][nx].came) {
+			std::cout << "start : " << nx << " : " << ny << std::endl;
+			RecursiveBackTraing(ny, nx);
+			if (ny != y) {
+				_board[(ny + y) / 2][nx].type = TileType::Empty;
+			}
+			else {
+				_board[ny][(nx + x) / 2].type = TileType::Empty;
+			}
+		}
+	}
 }
 Board::~Board()
 {
@@ -97,9 +126,9 @@ void Board::addItem(int row, int colum)
 	const std::string& path_user = Consts::paths[2].c_str();
 
 	Item* item;
-	if(_board[row][colum] == TileType::Wall)
+	if(_board[row][colum].type == TileType::Wall)
 		item = new Item(path_wall, row, colum, &_root);
-	else if(_board[row][colum] == TileType::USER)
+	else if(_board[row][colum].type == TileType::USER)
 		item = new Item(path_user, row, colum, &_root);
 	else
 		item = new Item(path_empty, row, colum, &_root);
@@ -120,9 +149,9 @@ void Board::moveCharcter(int y0, int x0, int y1, int x1)
 	_items[y0][x0] = item1;
 	_items[y1][x1] = item0;
 
-	TileType tmp = _board[y0][x0];
+	TileType tmp = _board[y0][x0].type;
 	_board[y0][x0] = _board[y1][x1];
-	_board[y1][x1] = tmp;
+	_board[y1][x1].type = tmp;
 
 	_player->set_X(x1);
 	_player->set_Y(y1);
@@ -138,7 +167,7 @@ void Board::moveItem(Item* item, int toRow, int toColum)
 }
 
 bool Board::check(int y, int x) {
-	if (TileType::Empty == _board[y][x])
+	if (TileType::Empty == _board[y][x].type)
 		return true;
 	else
 		return false;

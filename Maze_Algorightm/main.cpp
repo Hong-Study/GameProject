@@ -2,6 +2,6 @@
 #include"MainGame.h"
 
 int main() {
-	MainGame main(31);
+	MainGame main(21);
 	main.Play();
 }

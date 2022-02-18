@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <qdebug.h>
+#include <random>
 #include "Items.h"
 #include "Player.h"
 
@@ -22,8 +23,30 @@ private:
 		Wall,
 		USER = 2
 	};
+	enum Direction {
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN
+	};
+	struct Node {
+		TileType type;
+		bool came;
+	};
+	int directions[4] = {
+			Direction::UP,
+			Direction::DOWN,
+			Direction::LEFT,
+			Direction::RIGHT
+	};
+	const int DIR[4][2] = { {0,-2},{0,+2},{-2,0},{+2,0} };
+	Node** _board;
 
-	TileType** _board;
+	void GenerateByBinaryTree();				// 초기 맵 설정
+	void RecursiveBackTraing(int y, int x);		// Maze Algorithm
+	void shuffleArray(int* array, int size);
+	int inRange(int y, int x);
+
 	int _size;
 	Player* _player;
 
@@ -31,7 +54,6 @@ public:
 	Board(int size, Player* player);
 	~Board();
 	void addItem(int row, int colum);					//아이템 추가
-	void GenerateByBinaryTree();						//미로 알고리즘
 	void removeItem(int row, int colum);				//아이템 삭제
 	void moveItem(Item* item, int toRow, int toColum);	//아이템 교환
 	void moveCharcter(int x0, int y0, int x1, int y1);

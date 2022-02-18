@@ -38,6 +38,7 @@ void Menu::Windows_Setting(int width, int height)
 {
 	_view->setMinimumHeight(height);
 	_view->setMinimumWidth(width);
+
 	_view->setMaximumHeight(height);
 	_view->setMaximumWidth(width);
 }
