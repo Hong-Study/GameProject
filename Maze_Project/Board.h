@@ -59,6 +59,7 @@ public:
 	void moveCharcter(int x0, int y0, int x1, int y1);
 	void keyPressEvent(QKeyEvent* event);
 	bool check(int x, int y);							//벽인지 확인
+	
 	/*class PressEvent {
 	public:
 		virtual void PlayerMoveEvent() = 0;
