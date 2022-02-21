@@ -10,6 +10,7 @@
 
 #include "Player.h"
 #include "Board.h"
+#include "Consts.h"
 
 class Menu : public QGraphicsScene {
 	Q_OBJECT
@@ -29,9 +30,9 @@ private slots:
 	void btn_click();
 
 private:
-	QLineEdit _SIZE_INPUT;
+	QLineEdit _Level_INPUT;
 	QLineEdit _NAME_INPUT;
-	QLabel _SIZE_LABEL;
+	QLabel _Level_LABEL;
 	QLabel _NAME_LABEL;
 	QPushButton _button;
 };

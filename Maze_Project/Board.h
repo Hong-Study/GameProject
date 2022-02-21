@@ -12,7 +12,8 @@ private:
 	enum class TileType {
 		Wall,
 		Empty,
-		USER
+		USER,
+		Trap
 	};
 	enum Direction {
 		LEFT,
@@ -30,19 +31,24 @@ private:
 	Player* _player;
 	std::vector<std::vector<Item*>> _items;
 	QGraphicsRectItem _root;
-public:
+	int _trap;
 	
-	Board::Board(int size, Player* player);
+
+public:
+	Board::Board(int size, Player* player,int trap);
 	void Board::GenerateByBinaryTree();
 	Board::~Board();
 	void Board::removeItem(int row, int colum);
 	void Board::addItem(int row, int colum);
 	void Board::moveCharcter(int y0, int x0, int y1, int x1);
 	void Board::moveItem(Item* item, int toRow, int toColum);
-	bool Board::check(int y, int x);
+	int Board::check(int y, int x);
 	void Board::keyPressEvent(QKeyEvent* event);
 
 	void Board::shuffleArray(int* array, int size);
 	void Board::RecursiveBackTraing(int y, int x);
 	int Board::inRange(int y, int x);
+
+	void Make_Trap();
+	int rand(int a, int b);
 };

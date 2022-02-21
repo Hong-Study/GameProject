@@ -18,22 +18,22 @@ void Menu::Windows_setting(int width, int height){
 }
 void Menu::add_Widget() {
 	QGraphicsScene::addWidget(&_button);
-	QGraphicsScene::addWidget(&_SIZE_INPUT);
+	QGraphicsScene::addWidget(&_Level_INPUT);
 	QGraphicsScene::addWidget(&_NAME_INPUT);
 
-	QGraphicsScene::addWidget(&_SIZE_LABEL);
+	QGraphicsScene::addWidget(&_Level_LABEL);
 	QGraphicsScene::addWidget(&_NAME_LABEL);
 
-	_SIZE_INPUT.setGeometry(_view->minimumWidth() / 2 - 120, _view->minimumHeight() / 2 - 100, 100, 20);
+	_Level_INPUT.setGeometry(_view->minimumWidth() / 2 - 120, _view->minimumHeight() / 2 - 100, 100, 20);
 	_NAME_INPUT.setGeometry(_view->minimumWidth() / 2 + 20, _view->minimumHeight() / 2 - 100, 100, 20);
 
-	_SIZE_LABEL.setText("Size Input");
+	_Level_LABEL.setText("Level (1~4)");
 	_NAME_LABEL.setText("Name Input");
 
-	_SIZE_LABEL.setAlignment(Qt::AlignCenter);
+	_Level_LABEL.setAlignment(Qt::AlignCenter);
 	_NAME_LABEL.setAlignment(Qt::AlignCenter);
 
-	_SIZE_LABEL.setGeometry(_view->minimumWidth() / 2 - 120, _view->minimumHeight() / 2 - 120, 100, 20);
+	_Level_LABEL.setGeometry(_view->minimumWidth() / 2 - 120, _view->minimumHeight() / 2 - 120, 100, 20);
 	_NAME_LABEL.setGeometry(_view->minimumWidth() / 2 + 20, _view->minimumHeight() / 2 - 120, 100, 20);
 	_button.setGeometry(_view->minimumWidth() / 2 - 50, _view->minimumHeight() / 2 - 50, 100, 20);
 	_button.setText("Start");
@@ -53,12 +53,20 @@ Menu::Menu(QGraphicsView* view)
 
 void Menu::btn_click() {
 	qDebug() << "Working";
-	_size = _SIZE_INPUT.text().toInt();
+	_size = _Level_INPUT.text().toInt();
 	_player = new Player(1, 1, _NAME_INPUT.text());
-	board = new Board(_size, _player);
-	qDebug() << _size << " : " << _player->X();
-	Windows_setting(_size * 31, _size * 31);
+	if (_size < 5 && _size > 0) {
+		int trap = _size*5;
+		_size *= 10;
+		_size += 1;	
+		board = new Board(_size, _player, trap);
+		qDebug() << _size << " : " << _player->X();
+		Windows_setting(_size * (Consts::BOARD_IMAGE_SIZE + 1), _size * (Consts::BOARD_IMAGE_SIZE + 1));
 
-	_view->setScene(board);
-	_view->update();
+		_view->setScene(board);
+		_view->update();
+	}
+	else {
+		return;
+	}
 }
