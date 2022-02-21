@@ -13,7 +13,6 @@ Board::Board(int size, Player* player, int trap)
 	QGraphicsScene::addItem(&_root);
 	//_root.setX(QGraphicsScene::sceneRect().width() / 2 - (Consts::BOARD_IMAGE_SIZE * _size / 2));		//XÁÂÇ¥ ¼³Á¤
 	//_root.setY(QGraphicsScene::sceneRect().height() / 2 - (Consts::BOARD_IMAGE_SIZE * _size / 2));		//YÁÂÇ¥ ¼³Á¤
-
 	
 	if (_size % 2 == 0)
 		return;
