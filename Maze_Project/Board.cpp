@@ -20,6 +20,9 @@ Board::Board(int size, Player* player, int trap)
 		_board[i] = new Node[_size];
 	}
 	GenerateByBinaryTree();
+	Make_Trap();
+	Setting_Lighting(_player->Y(), _player->X());
+
 	for (int row = 0; row < _size; ++row) {
 		std::vector<Item*> rowItems(_size);
 		_items.push_back(rowItems);
@@ -27,7 +30,6 @@ Board::Board(int size, Player* player, int trap)
 			addItem(row, colum);
 		}
 	}
-	Make_Trap();
 }
 
 void Board::GenerateByBinaryTree()
@@ -43,6 +45,7 @@ void Board::GenerateByBinaryTree()
 				_board[y][x].type = TileType::Empty;
 				_board[y][x].came = false;
 			}
+			_board[y][x].tipe = TileVisible::Invisible;//모든지역 안보이게 설정
 		}
 	}
 	RecursiveBackTraing(1, 1);
@@ -103,6 +106,22 @@ Board::~Board()
 	}
 	delete _board;
 }
+void Board::Setting_Lighting(int y, int x) {
+	int n = _size / 5;
+	double c, d;
+	for (int i = 0; i < 360; i++) {
+		c = (double)y + 0.5, d = (double)x + 0.5;
+		while (true) {
+			c += sin(i) / 100;
+			d += cos(i) / 100;
+			_board[(int)c][(int)d].tipe = TileVisible::noVisible;
+			if (_board[(int)c][(int)d].type == TileType::Wall) {
+				_board[(int)c][(int)d].tipe = TileVisible::noVisible;
+				break;
+			}
+		}
+	}
+}
 void Board::Make_Trap() {
 	int x, y;
 	while (_trap > 0) {
@@ -119,8 +138,6 @@ void Board::Make_Trap() {
 				continue;
 			else {
 				_board[y][x].type = TileType::Trap;
-				removeItem(y, x);
-				addItem(y, x);
 				_trap--;
 			}
 		}
@@ -144,17 +161,28 @@ void Board::addItem(int row, int colum)
 	const std::string& path_wall = Consts::paths[0].c_str();
 	const std::string& path_empty = Consts::paths[1].c_str();
 	const std::string& path_user = Consts::paths[2].c_str();
-	const std::string& path_trap = Consts::paths[3].c_str();
+	const std::string& path_black = Consts::paths[3].c_str();
 
 	Item* item;
-	if (_board[row][colum].type == TileType::Wall)
+	if (_board[row][colum].tipe != TileVisible::Invisible) {
+		if (_board[row][colum].type == TileType::Wall)
+			item = new Item(path_wall, row, colum, &_root);
+		else if (_board[row][colum].type == TileType::USER)
+			item = new Item(path_user, row, colum, &_root);
+		else
+			item = new Item(path_empty, row, colum, &_root);
+		_board[row][colum].tipe = TileVisible::Visible;
+	}
+	else 
+		item = new Item(path_black, row, colum, &_root);
+	
+	/*if (_board[row][colum].type == TileType::Wall)
 		item = new Item(path_wall, row, colum, &_root);
 	else if (_board[row][colum].type == TileType::USER)
 		item = new Item(path_user, row, colum, &_root);
-	else if (_board[row][colum].type == TileType::Empty)
-		item = new Item(path_empty, row, colum, &_root);
 	else
-		item = new Item(path_trap, row, colum, &_root);
+		item = new Item(path_empty, row, colum, &_root);*/
+
 
 	item->setPos(colum * Consts::BOARD_IMAGE_SIZE, row * Consts::BOARD_IMAGE_SIZE);
 	QGraphicsScene::addItem(item);					//이름이 같지만 Scene의 addItem 함수임.
@@ -175,8 +203,8 @@ void Board::moveCharcter(int y0, int x0, int y1, int x1)
 {
 	if (check(y1, x1) == 2) {
 		_board[y1][x1].type = TileType::Empty;
-		removeItem(y1, x1);
-		addItem(y1, x1);
+		/*removeItem(y1, x1);
+		addItem(y1, x1);*/
 		
 		while (true) {
 			y1 = rand(2, _size - 2);
@@ -243,6 +271,13 @@ void Board::keyPressEvent(QKeyEvent* event) {
 			moveCharcter(y, x, y, x + 1);
 		break;
 	}
-	if (_board[_size - 2][_size - 1].type == TileType::USER)
-		return;
+	Setting_Lighting(y, x);
+	for (int row = 0; row < _size; ++row) {
+		for (int colum = 0; colum < _size; ++colum) {
+			if (_board[row][colum].tipe == TileVisible::noVisible) {
+				removeItem(row, colum);
+				addItem(row, colum);
+			}
+		}
+	}
 }

@@ -1,6 +1,7 @@
 #include "Board.h"
 #include "Player.h"
 
+
 Board::Board(int size, Player* player)
 	: _size(size)
 	, _board(new Node* [size] {})
@@ -23,9 +24,8 @@ Board::~Board()
 }
 void Board::GenerateByBinaryTree()
 {
-	//초기맵 설정
 	for (int y = 0; y < _size; y++) {
-		
+
 		for (int x = 0; x < _size; x++) {
 			if (x % 2 == 0 || y % 2 == 0) {
 				_board[y][x].type = TileType::Wall;
@@ -34,9 +34,10 @@ void Board::GenerateByBinaryTree()
 				_board[y][x].type = TileType::Empty;
 				_board[y][x].came = false;
 			}
+			_board[y][x].tipe = TileVisible::Invisible;//모든지역 안보이게 설정
 		}
 	}
-	RecursiveBackTraing(1,1);
+	RecursiveBackTraing(1, 1);
 	_board[1][1].type = TileType::USER;
 }
 
@@ -84,14 +85,66 @@ void Board::println(bool m)
 {
 	if (!m)
 		system("cls");
+	int a, b;
 	for (int y = 0; y < _size; y++) {
 		for (int x = 0; x < _size; x++) {
-			if (_board[y][x].type == TileType::Wall) 
-				std::cout << "ㅁ";
-			else if(_board[y][x].type == TileType::USER)
+			if (_board[y][x].tipe == TileVisible::Visible) {//움직임 이벤트 전, 시야에 들어왔던 지역(밝혀진 지역)들
+				if (_board[y][x].type == TileType::Empty)//빈공간일 경우에는
+					_board[y][x].tipe = TileVisible::noVisible;//1번유형으로 변경
+				else                                      //벽일 경우에는
+					_board[y][x].tipe = TileVisible::nonVisible;//2번유형으로변경
+															//(지나갔던 지역의 벽이랑 길이랑 구분)
+			}
+			if (_board[y][x].type == TileType::USER) {
+				a = y, b = x;
+			}//유저위치 a,b에 저장
+		}
+	}
+	double c, d;
+	for (int i = 0; i < 360; i++) {
+		c = (double)a + 0.5, d = (double)b + 0.5;
+		while (true) {
+			c += sin(i) / 100;
+			d += cos(i) / 100;
+			_board[(int)c][(int)d].tipe = TileVisible::Visible;
+			if (_board[(int)c][(int)d].type == TileType::Wall) {
+				_board[(int)c][(int)d].tipe = TileVisible::Visible;
+				break;
+			}
+		}//유저 위치 기준으로 360도를 1도씩 돌아가면서 보고, 0.1칸씩 앞으로 전진하면서
+		//지나간 모든 지역을 볼 수 있는 지역(Visible)로 지정하고
+		//벽에 닿으면 벽을 visible로 바꾸면서 빠져나옴
+		//(360번 반복)
+
+		//꼭짓점 기준으로 하는 알고리즘 만들어볼랬는데
+		//일부지역이 적용안되거나 안보여야하는곳까지 보이고하는 문제가
+		//계속 나길래 포기했어요..
+	}
+
+	//#include <QAmbientLightReading> 쓰면
+	// 밝기수준을 정할수있길래 거리에따라 밝기수준(0~5)로 할랬는데
+	// 버전이 낮아서 그런지 안뜨길래.. 일단 아래걸로 표시했어요
+	for (int y = 0; y < _size; y++) {
+		for (int x = 0; x < _size; x++) {
+			if (_board[y][x].type == TileType::Wall) {//벽일때
+				if (_board[y][x].tipe == TileVisible::Visible) // 시야범위내의 벽
+					std::cout << "▦";
+				else if (_board[y][x].tipe == TileVisible::nonVisible)// 시야범위 밖의 벽 //(2번유형)
+					std::cout << "▩";
+				else                                            //그 외의 모든 벽
+					std::cout << "■";
+			}
+			else if (_board[y][x].type == TileType::USER) {  // 유저위치
 				std::cout << "ㅍ";
-			else
-				std::cout << "  ";
+			} 
+			else {//이동가능공간일 때
+				if (_board[y][x].tipe == TileVisible::Visible)// 시야범위 내 이동 가능 공간
+					std::cout << "  ";
+				else if (_board[y][x].tipe == TileVisible::noVisible)   //(1번유형)
+					std::cout << "ㅁ";//시야범위에 한 번 이상 들어오면 이동 공간
+				else
+					std::cout << "■";//시야범위 밖의 이동 공간
+			}
 		}
 		std::cout << std::endl;
 	}
@@ -119,10 +172,10 @@ void Board::PlayerMoveEvent()
 	int x;
 	int y;
 	for (;;) {
-		if (_kbhit()) {        //키보드 입력 확인 (true / false)
-			c = _getch();      // 방향키 입력시 224 00이 들어오게 되기에 앞에 있는 값 224를 없앰
-			if (c == -32) {    // -32로 입력되면
-				c = _getch();  // 새로 입력값을 판별하여 상하좌우 출력
+		if (_kbhit()) {
+			c = _getch();
+			if (c == -32) {
+				c = _getch();
 				x = _player->X();
 				y = _player->Y();
 				switch (c) {
@@ -135,12 +188,12 @@ void Board::PlayerMoveEvent()
 						moveCharcter(x, y, x + 1, y);
 					break;
 				case static_cast<int>(Player::Move::DOWN):
-					if (check(x, y+1))
-						moveCharcter(x, y, x , y+1);
+					if (check(x, y + 1))
+						moveCharcter(x, y, x, y + 1);
 					break;
 				case static_cast<int>(Player::Move::UP):
 					if (check(x, y - 1))
-						moveCharcter(x, y, x, y-1);
+						moveCharcter(x, y, x, y - 1);
 					break;
 				}
 			}
@@ -148,39 +201,3 @@ void Board::PlayerMoveEvent()
 		}
 	}
 }
-
-//초기맵 설정
-	//for (int y = 0; y < _size; y++) {
-	//	for (int x = 0; x < _size; x++) {
-	//		if (x % 2 == 0 || y % 2 == 0)
-	//			_board[y][x] = TileType::Wall;
-	//		else
-	//			_board[y][x] = TileType::Empty;
-	//	}
-	//}
-	//srand(unsigned(time(NULL)));
-
-	//랜덤 길 뚫기
-	//for (int y = 0; y < _size; y++) {
-	//	for (int x = 0; x < _size; x++) {
-	//		if (x % 2 == 0 || y % 2 == 0)
-	//			continue;
-
-	//		if (y == _size - 2) {
-	//			_board[y][x + 1] = TileType::Empty;
-	//			continue;
-	//		}
-	//		if (x == _size - 2) {
-	//			_board[y + 1][x] = TileType::Empty;
-	//			continue;
-	//		}
-	//		if (rand() % 2 == 0) {
-	//			_board[y][x + 1] = TileType::Empty;
-	//		}
-	//		else {
-	//			_board[y+1][x] = TileType::Empty;
-	//		}
-	//	}
-	//}
-	//_board[_player->Y()][_player->X()] = TileType::USER;
-	//println(true);
