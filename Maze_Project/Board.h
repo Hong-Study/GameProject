@@ -3,6 +3,8 @@
 #include <QtWidgets/QGraphicsTextItem>
 #include <QtWidgets/qgraphicseffect.h>
 #include <QtWidgets/qpushbutton.h>
+#include <QtWidgets/qlabel.h>
+#include <qstring.h>
 #include <iostream>
 
 #include "item.h"
@@ -15,18 +17,14 @@ private:
 		Wall,
 		Empty,
 		USER,
-		Trap,
-		Echo
+		Trap
 	};
 	enum class TileVisible {
 		Visible, // 시야 내 구간
 		Invisible, // 시야 외 구간
 		detectInvisible, // 시야 내 구간 -> 외 구간 바뀜
+		alreadyVisible // 시야 내 구간 -> 외 구간으로 이미 바뀐 구간
 	};
-	/*enum class MetaVerse {
-		detecting,
-		nonDetecting
-	};*/
 	enum Direction {
 		LEFT,
 		RIGHT,
@@ -37,7 +35,6 @@ private:
 	struct Node {
 		TileType type;
 		TileVisible vision;
-		//MetaVerse detecting;
 		bool came;
 	};
 	Node** _board;		// 미니맵
@@ -49,7 +46,8 @@ private:
 	int _trap;
 
 	QPushButton victory;
-
+	QLabel UI;
+	QString UI_Text;
 private slots:
 	void btn_click();
 
@@ -73,7 +71,7 @@ public:
 	
 	void Make_Trap();			//트랩 생성
 	int rand(int a, int b);		//a~b 안의 랜덤 인수 생성
-	void Setting_Lighting(int y, int x);
-
-
+	void Setting_Lighting(int y, int x, bool m);
+	void usingItem1(int y, int x);
+	void new_Setting(int y, int x, bool m);
 };

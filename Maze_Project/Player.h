@@ -10,15 +10,16 @@ private:
 	int _winx;
 	int _winy;
 	int _Check_Trap;
+	int _show_map;
 	QString _name;
 
 public:
-	Player(int x, int y, int Check_Trap, QString name) 
+	Player(int x, int y, int size, QString name) 
 		: _x(x)
 		, _y(y)
-		, _Check_Trap(Check_Trap)
+		, _Check_Trap(size*2)
 		, _name(name) 
-		, _winx(0)
+		, _show_map(size)
 		, _winy(0){}
 
 	int X() const {
@@ -42,8 +43,23 @@ public:
 	void set_Name(const QString name) {
 		_name = name;
 	}
+	int left_Check() {
+		if (_Check_Trap == 0)
+			return 0;
+		return _Check_Trap;
+	}
+	int left_show() {
+		if (_show_map == 0)
+			return 0;
+		return _show_map;
+	}
 	bool Check() {
 		if (_Check_Trap-- <= 0)
+			return false;
+		return true;
+	}
+	bool Show_Mape() {
+		if (_show_map-- <= 0)
 			return false;
 		return true;
 	}

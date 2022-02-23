@@ -11,5 +11,5 @@ namespace Consts {
         "C:\\imges\\Trap.png"
 
     };
-    const int BOARD_IMAGE_SIZE = 25;
+    const int BOARD_IMAGE_SIZE = 20;
 };

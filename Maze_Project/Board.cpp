@@ -5,6 +5,9 @@
 #include <qdebug.h>
 #include <QKeyEvent>
 
+#include <windows.h> //windows.h 헤더 추가
+#pragma comment(lib, "Winmm.lib") //winmm.lib 추가
+
 Board::Board(int size, Player* player, int trap)
 	: _size(size)					//후에 사이즈 추가
 	, _player(player)
@@ -21,7 +24,7 @@ Board::Board(int size, Player* player, int trap)
 	}
 	GenerateByBinaryTree();
 	Make_Trap();
-	Setting_Lighting(_player->Y(), _player->X());
+	Setting_Lighting(_player->Y(), _player->X(), true);
 
 	for (int row = 0; row < _size; ++row) {
 		std::vector<Item*> rowItems(_size);
@@ -40,7 +43,9 @@ Board::Board(int size, Player* player, int trap)
 	}
 	victory.setText("Win!!");
 	victory.setGeometry((_size*Consts::BOARD_IMAGE_SIZE) / 2 - 50, (_size * Consts::BOARD_IMAGE_SIZE) / 2 - 15, 120, 30);
-
+	UI.setGeometry(0, _size * Consts::BOARD_IMAGE_SIZE + 10, _size * Consts::BOARD_IMAGE_SIZE, 30);
+	UI.setText(UI_Text.sprintf("Delete_Trap : %d\t\t Show_Map : %d", _player->left_Check(), _player->left_show()));
+	QGraphicsScene::addWidget(&UI);
 	QGraphicsScene::connect(&victory, SIGNAL(clicked()), this, SLOT(btn_click()));
 }
 
@@ -76,7 +81,7 @@ void Board::shuffleArray(int* array, int size) {
 }
 void Board::RecursiveBackTraing(int y, int x) {
 	int r, nx, ny;
-	int directions[4] = {
+	int directions[5] = {
 			Direction::UP,
 			Direction::DOWN,
 			Direction::LEFT,
@@ -117,11 +122,13 @@ Board::~Board()
 	}
 	delete _board;
 }
-void Board::Setting_Lighting(int y, int x) {
-	for (int i = 0; i < _size; i++) {
-		for (int j = 0; j < _size; j++) {
-			if (_board[i][j].vision == TileVisible::Visible)
-				_board[i][j].vision = TileVisible::detectInvisible;
+void Board::Setting_Lighting(int y, int x, bool m) {
+	if (m) {
+		for (int i = 0; i < _size; i++) {
+			for (int j = 0; j < _size; j++) {
+				if (_board[i][j].vision == TileVisible::Visible)
+					_board[i][j].vision = TileVisible::detectInvisible;
+			}
 		}
 	}
 	_board[y][x].vision = TileVisible::Visible;
@@ -215,6 +222,7 @@ void Board::addItem(int row, int colum)
 			item = new Item(path_visibleEmpty, row, colum, &_root);
 		else if (_board[row][colum].type == TileType::Trap)
 			item = new Item(path_visibleEmpty, row, colum, &_root);
+		_board[row][colum].vision = TileVisible::alreadyVisible;
 	}
 	else
 		item = new Item(path_black, row, colum, &_root);
@@ -226,7 +234,7 @@ void Board::addItem(int row, int colum)
 	else
 		item = new Item(path_empty, row, colum, &_root);*/
 
-	item->setPos(colum * Consts::BOARD_IMAGE_SIZE, row * Consts::BOARD_IMAGE_SIZE );
+	item->setPos(colum * Consts::BOARD_IMAGE_SIZE, row * Consts::BOARD_IMAGE_SIZE +10);
 	QGraphicsScene::addItem(item);					//이름이 같지만 Scene의 addItem 함수임.
 	_items[row][colum] = item;
 }
@@ -291,6 +299,30 @@ int Board::check(int y, int x) {
 	else
 		return 0;
 }
+void Board::usingItem1(int y, int x) {
+	for (int i = 0; i < 4; i++) {
+		int directX, directY;
+		if (i == 0)
+			directX = 1, directY = 0;
+		if (i == 1)
+			directX = -1, directY = 0;
+		if (i == 2)
+			directX = 0, directY = 1;
+		if (i == 3)
+			directX = 0, directY = -1;
+		int a = y, b = x;
+		if (check(a + directY, b + directX)) {//공기일때
+			while (true) {
+				if (!check(a + directY, b + directX)) {
+					Setting_Lighting(a, b, false);
+					break;
+				}
+				a += directY;
+				b += directX;
+			}
+		}
+	}
+}
 
 void Board::keyPressEvent(QKeyEvent* event) {
 	auto x = _player->X();
@@ -333,11 +365,21 @@ void Board::keyPressEvent(QKeyEvent* event) {
 			removeItem(y - 1, x);
 			addItem(y - 1, x);
 		}
-
 	}
 	x = _player->X();
 	y = _player->Y();
-	Setting_Lighting(y, x);
+	if (event->key() == Qt::Key_D && _player->Show_Mape()) {
+		usingItem1(y, x);
+		new_Setting(y, x, false);
+	}
+	else
+		new_Setting(y, x, true);
+	if (_player->Victory_Chekc())
+		QGraphicsScene::addWidget(&victory);
+	UI.setText(UI_Text.sprintf("Delete_Trap : %d\t\t Show_Map : %d", _player->left_Check(), _player->left_show()));
+}
+void Board::new_Setting(int y, int x, bool m) {
+	Setting_Lighting(y, x, m);
 	for (int row = 0; row < _size; ++row) {
 		for (int colum = 0; colum < _size; ++colum) {
 			if (_board[row][colum].vision == TileVisible::detectInvisible) {
@@ -350,16 +392,6 @@ void Board::keyPressEvent(QKeyEvent* event) {
 			}
 		}
 	}
-	//for (int row = 0; row < _size; ++row) {
-	//	for (int colum = 0; colum < _size; ++colum) {
-	//		if (_board[row][colum].vision == TileVisible::noVisible) {
-	//			removeItem(row, colum);
-	//			addItem(row, colum);
-	//		}
-	//	}
-	//}
-	if (_player->Victory_Chekc())
-		QGraphicsScene::addWidget(&victory);
 }
 void Board::btn_click() {
 	exit(0);
