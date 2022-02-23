@@ -7,13 +7,19 @@ class Player {
 private:
 	int _x;
 	int _y;
+	int _winx;
+	int _winy;
+	int _Check_Trap;
 	QString _name;
 
 public:
-	Player(int x, int y, QString name) 
+	Player(int x, int y, int Check_Trap, QString name) 
 		: _x(x)
 		, _y(y)
-		, _name(name) {}
+		, _Check_Trap(Check_Trap)
+		, _name(name) 
+		, _winx(0)
+		, _winy(0){}
 
 	int X() const {
 		return _x;
@@ -27,7 +33,23 @@ public:
 	void set_Y(int y){
 		_y = y;
 	}
+	void set_winX(int x) {
+		_winx = x;
+	}
+	void set_winY(int y) {
+		_winy = y;
+	}
 	void set_Name(const QString name) {
 		_name = name;
+	}
+	bool Check() {
+		if (_Check_Trap-- <= 0)
+			return false;
+		return true;
+	}
+	bool Victory_Chekc() {
+		if (_x == _winx && _y == _winy)
+			return true;
+		return false;
 	}
 };

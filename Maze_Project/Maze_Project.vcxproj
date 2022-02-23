@@ -90,7 +90,7 @@
     <ClCompile Include="Menu.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Board.h" />
+    <QtMoc Include="Board.h" />
     <ClInclude Include="Consts.h" />
     <QtMoc Include="Menu.h" />
     <ClInclude Include="Player.h" />

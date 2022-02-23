@@ -2,45 +2,57 @@
 //#include <QtWidgets/QgraphicsRectItem>
 #include <QtWidgets/QGraphicsTextItem>
 #include <QtWidgets/qgraphicseffect.h>
-
-#include <qgraphicsview.h>
+#include <QtWidgets/qpushbutton.h>
 #include <iostream>
+
 #include "item.h"
 #include "Player.h"
 
 class Board : public QGraphicsScene {
+	Q_OBJECT
 private:
 	enum class TileType {
 		Wall,
 		Empty,
 		USER,
-		Trap
+		Trap,
+		Echo
 	};
 	enum class TileVisible {
 		Visible, // 시야 내 구간
 		Invisible, // 시야 외 구간
-		noVisible, // 시야 내 -> 시야 외 구간 - (길)
-		//nonVisible // 시야 내 -> 시야 외 구간 - (벽)
+		detectInvisible, // 시야 내 구간 -> 외 구간 바뀜
 	};
+	/*enum class MetaVerse {
+		detecting,
+		nonDetecting
+	};*/
 	enum Direction {
 		LEFT,
 		RIGHT,
 		UP,
-		DOWN
+		DOWN,
+		skill1
 	};
 	struct Node {
 		TileType type;
-		TileVisible tipe;
+		TileVisible vision;
+		//MetaVerse detecting;
 		bool came;
 	};
-	Node** _board;		//맵
-	std::vector<std::vector<Item*>> _items;		//실질적 이미지 표현(_board를 통해서)
+	Node** _board;		// 미니맵
+	std::vector<std::vector<Item*>> _items;		//실질적 보드
 	QGraphicsRectItem _root;
 	Player* _player;
 	const int DIR[4][2] = { {0,-2},{0,+2},{-2,0},{+2,0} };
 	int _size;
 	int _trap;
-	
+
+	QPushButton victory;
+
+private slots:
+	void btn_click();
+
 public:
 	Board::Board(int size, Player* player,int trap);
 	void Board::GenerateByBinaryTree();
@@ -62,4 +74,6 @@ public:
 	void Make_Trap();			//트랩 생성
 	int rand(int a, int b);		//a~b 안의 랜덤 인수 생성
 	void Setting_Lighting(int y, int x);
+
+
 };

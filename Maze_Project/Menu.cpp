@@ -52,16 +52,14 @@ Menu::Menu(QGraphicsView* view)
 }
 
 void Menu::btn_click() {
-	qDebug() << "Working";
 	_size = _Level_INPUT.text().toInt();
-	_player = new Player(1, 1, _NAME_INPUT.text());
+	_player = new Player(1, 1, _size * 2, _NAME_INPUT.text());
 	if (_size < 5 && _size > 0) {
 		int trap = _size*5;
 		_size *= 10;
 		_size += 1;	
 		board = new Board(_size, _player, trap);
-		qDebug() << _size << " : " << _player->X();
-		Windows_setting(_size * (Consts::BOARD_IMAGE_SIZE + 1), _size * (Consts::BOARD_IMAGE_SIZE + 1));
+		Windows_setting(_size * (Consts::BOARD_IMAGE_SIZE + 1), _size * (Consts::BOARD_IMAGE_SIZE + 1) + 50);
 
 		_view->setScene(board);
 		_view->update();
