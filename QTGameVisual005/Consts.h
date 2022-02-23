@@ -9,6 +9,7 @@ namespace Consts {
         "C:\\imges\\Black.png",
         "C:\\imges\\InvisibleEmpty.png",
         "C:\\imges\\Trap.png"
+
     };
-    const int BOARD_IMAGE_SIZE = 20;
+    const int BOARD_IMAGE_SIZE = 25;
 };

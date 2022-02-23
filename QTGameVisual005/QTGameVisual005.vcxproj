@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Board.h" />
+    <QtMoc Include="Board.h" />
     <ClInclude Include="Consts.h" />
     <ClInclude Include="Item.h" />
     <QtMoc Include="Menu.h" />
