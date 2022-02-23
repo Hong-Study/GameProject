@@ -1,3 +1,8 @@
 ﻿  Reading Qt configuration (C:/Qt/5.15.0/msvc2019_64/bin/qmake)
+  moc Board.h
   Board.cpp
-  QTGameVisual005.vcxproj -> C:\Users\user\Desktop\QT게임\QTGameVisual005\x64\Debug\QTGameVisual005.exe
+  Menu.cpp
+  main.cpp
+C:\Users\user\Desktop\QT게임\QTGameVisual005\Player.h(13,24): error C2065: '_size': 선언되지 않은 식별자입니다. (소스 파일 컴파일 중 Board.cpp)
+C:\Users\user\Desktop\QT게임\QTGameVisual005\Player.h(13,24): error C2065: '_size': 선언되지 않은 식별자입니다. (소스 파일 컴파일 중 main.cpp)
+C:\Users\user\Desktop\QT게임\QTGameVisual005\Player.h(13,24): error C2065: '_size': 선언되지 않은 식별자입니다. (소스 파일 컴파일 중 Menu.cpp)
