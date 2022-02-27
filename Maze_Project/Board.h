@@ -9,6 +9,7 @@
 
 #include "item.h"
 #include "Player.h"
+#include "Music.h"
 
 class Board : public QGraphicsScene {
 	Q_OBJECT
@@ -48,6 +49,7 @@ private:
 	QPushButton victory;
 	QLabel UI;
 	QString UI_Text;
+	Music music;
 private slots:
 	void btn_click();
 

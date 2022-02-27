@@ -27,7 +27,7 @@ void Menu::add_Widget() {
 	_Level_INPUT.setGeometry(_view->minimumWidth() / 2 - 120, _view->minimumHeight() / 2 - 100, 100, 20);
 	_NAME_INPUT.setGeometry(_view->minimumWidth() / 2 + 20, _view->minimumHeight() / 2 - 100, 100, 20);
 
-	_Level_LABEL.setText("Level (1~5)");
+	_Level_LABEL.setText("Level (2~5)");
 	_NAME_LABEL.setText("Name Input");
 
 	_Level_LABEL.setAlignment(Qt::AlignCenter);
@@ -54,7 +54,7 @@ Menu::Menu(QGraphicsView* view)
 void Menu::btn_click() {
 	_size = _Level_INPUT.text().toInt();
 	_player = new Player(1, 1, _size, _NAME_INPUT.text());
-	if (_size < 6 && _size > 0) {
+	if (_size < 6 && _size > 1) {
 		int trap = _size * 5;
 		_size *= 10;
 		_size += 1;

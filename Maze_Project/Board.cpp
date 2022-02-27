@@ -4,10 +4,6 @@
 #include <random>
 #include <qdebug.h>
 #include <QKeyEvent>
-
-#include <windows.h> //windows.h 헤더 추가
-#pragma comment(lib, "Winmm.lib") //winmm.lib 추가
-
 Board::Board(int size, Player* player, int trap)
 	: _size(size)					//후에 사이즈 추가
 	, _player(player)
@@ -115,7 +111,8 @@ Board::~Board()
 	for (int row = 0; row < _items.size(); ++row) {
 		for (int colum = 0; colum < _items[row].size(); ++colum) {
 			removeItem(row, colum);
-		}
+			delete _items[row][colum];
+		}		
 	}
 	for (int i = 0; i < _size; i++) {
 		delete _board[i];
@@ -163,6 +160,7 @@ void Board::Setting_Lighting(int y, int x, bool m) {
 }
 void Board::Make_Trap() {
 	int x, y;
+	
 	while (_trap > 0) {
 		x = rand(2, _size - 2);
 		y = rand(2, _size - 2);
@@ -374,8 +372,10 @@ void Board::keyPressEvent(QKeyEvent* event) {
 	}
 	else
 		new_Setting(y, x, true);
-	if (_player->Victory_Chekc())
+	if (_player->Victory_Chekc()) {	
 		QGraphicsScene::addWidget(&victory);
+		music.Play();
+	}
 	UI.setText(UI_Text.sprintf("Delete_Trap : %d\t\t Show_Map : %d", _player->left_Check(), _player->left_show()));
 }
 void Board::new_Setting(int y, int x, bool m) {

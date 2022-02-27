@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtWidgets/qgraphicsScene>
-//#include <QtWidgets/QgraphicsRectItem>
 #include <QtWidgets/QGraphicsTextItem>
 #include <QtWidgets/qpushbutton.h>
 #include <qgraphicsview.h>

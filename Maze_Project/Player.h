@@ -44,12 +44,12 @@ public:
 		_name = name;
 	}
 	int left_Check() {
-		if (_Check_Trap == 0)
+		if (_Check_Trap <= 0)
 			return 0;
 		return _Check_Trap;
 	}
 	int left_show() {
-		if (_show_map == 0)
+		if (_show_map <= 0)
 			return 0;
 		return _show_map;
 	}
@@ -59,8 +59,11 @@ public:
 		return true;
 	}
 	bool Show_Mape() {
-		if (_show_map-- <= 0)
+		if (_show_map-- <= 0) {
+			if (_show_map < 0)
+				_show_map = 0;
 			return false;
+		}
 		return true;
 	}
 	bool Victory_Chekc() {
